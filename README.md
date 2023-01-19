@@ -36,3 +36,6 @@ generará un **evento** en un **log de Windows** del **registro de eventos Windo
 		- **Origen** Aplicación, módulo que causó el evento.
 		- **Id. del evento** Identificador único del tipo de evento.
 		- **Categoría**	Clasificación arbitraria del evento. Sin el uso de ficheros descriptivos de categorías compilados en DLL, los eventos insertados por este script mostrarán un número como categoría.
+
+Visor de eventos de windos (ejecutar *eventvwr.msc*)
+![Visor de eventos de Windows](img/eventViewer.png)
