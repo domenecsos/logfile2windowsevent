@@ -99,7 +99,7 @@ Event: 2001 [Warning] Duis mattis dolor a dolor feugiat semper.
 Ctrl-C
 PS C:\...\logfile2windowsevent>
 ```
-El inicio del log informa:
+El inicio del script informa:
 - Qué marcas de texto (TRIVIUM y QUADRIVIUM) se buscará en cada línea del fichero de log.
 - Para cada marca el id de evento de Windows que se generará y su nivel.
 ```
@@ -152,3 +152,69 @@ Log:   01/19/2023 10:59:29 - 15 - TRIVIUM: Duis mattis dolor a dolor feugiat sem
 Event: 2001 [Warning] Duis mattis dolor a dolor feugiat semper.
 ```
 
+# Paso a producción
+
+## Ejecución 
+
+A implementar al gusto del usuario.
+
+- Se sugiere crear un servicio de Windows. Este enlace no se ha probado pero tiene buen aspecto
+	- [https://woshub.com/run-powershell-script-as-windows-service/](https://woshub.com/run-powershell-script-as-windows-service/)
+
+## Configuración
+
+Toda la configuración está en el propio `listenLogGenEvents.ps1` 
+entre dos marcas `Configurar`.
+El resto del fichero no se debe editar.
+
+```
+# -------------------------------------------------------------------------------------------------------------------
+# Configurar
+...
+# /Configurar
+# -------------------------------------------------------------------------------------------------------------------
+```
+Situación del fichero de log monitorizado
+```
+$logFile = "log\generated.log" 
+```
+
+Event log de Windows a escribir. Si no existe, el script la creará.
+```
+$paramLog = "AppVideoLog"
+```
+Source de los eventos en el event log. Si no existe, el script la creará.
+```
+$paramSource = "AppVideoSrc"
+```
+Define los eventos que se pueden obtener del log
+- mark: Texto que se espera encontrar en una línea del fichero de log.
+- eventCode: Código de evento de Windows que se genera.
+- eventType: Tipo de evento ('Warning', 'Error', 'Information'...)
+- category: Número de categoría del evento
+```
+$events =@(
+	[pscustomobject]@{mark="TRIVIUM:";   eventCode=2001;eventType='Warning';category=3},
+	[pscustomobject]@{mark="QUADRIVIUM:";eventCode=2002;eventType='Error';  category=4}
+)
+```
+Definir la conversión de linea del fichero de log en mensaje del event log.
+Para cada log analizado se hará una función de extracción del mensaje de la línea.
+Se puede devolver la propia línea y adelante con `return $LogLine`.
+```
+function logLine2eventMessage{
+	Param(
+		[String]$LogLine,  # La linea completa del fichero de log
+		[String]$EventMark # La marca de evento que se ha encontrado en la linea del fichero de log
+	)
+	# Ejemplo: Devuelve como mensaje lo que viene detrás de la marca de evento en la linea del fichero de log
+	return $LogLine.Substring( $LogLine.indexOf($EventMark) + $EventMark.Length ).Trim()
+}
+```
+N.B. Para limpiar pruebas, ejecutar en este orden y con las variables informadas
+```
+$logFile = "log\generated.log" 
+$paramLog = "AppVideoLog"
+Remove-EventLog -Source  $paramSource
+Remove-EventLog -LogName $paramLog
+```
