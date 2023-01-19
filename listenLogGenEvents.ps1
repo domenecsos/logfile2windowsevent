@@ -32,8 +32,8 @@ $paramSource = "AppVideoSrc"
 # - eventType: Tipo de evento ('Warning', 'Error', 'Information'...)
 # - category: Número de categoría del evento
 $events =@(
-	[pscustomobject]@{mark="TRIVIUM:";   eventCode=2001;eventType='Warning';category=2},
-	[pscustomobject]@{mark="QUADRIVIUM:";eventCode=2002;eventType='Error';  category=3}
+	[pscustomobject]@{mark="TRIVIUM:";   eventCode=2001;eventType='Warning';category=3},
+	[pscustomobject]@{mark="QUADRIVIUM:";eventCode=2002;eventType='Error';  category=4}
 )
 
 # Definir la conversión de linea del fichero de log en mensaje del event log
