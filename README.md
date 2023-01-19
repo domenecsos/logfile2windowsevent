@@ -48,9 +48,13 @@ Visor de eventos de windows (ejecutar *eventvwr.msc*)
 
 - Arrancar Powershell como administrador. Esto evita tener que registrar los scripts descargados, tarea que harán los administradores para ejecutar luego en producción.
 
-![Arrancar Powershell como administrador](img/powershellAdmin.png)
+![Arrancar Powershell como administrador](img/tutorial/01.powershellAdmin.png)
 
 - En la consola de Powershell, ir al directorio que contiene los scripts.
+
+```
+PS C:\> cd C:\...\logfile2windowsevent
+```
 
 - Arrancar el generador de log ejemplo (*log/generated.log*):
 ```
@@ -116,5 +120,35 @@ Event: 2002 [Error] Quisque faucibus odio erat, sed laoreet dolor porttitor a.
 
 ## Ver eventos del tutorial
 
-- Ejecutar *eventvwr.msc*
+- Ejecutar *eventvwr.msc* 
+
+- Crear una vista personalizada:
+
+![Crear una vista personalizada](img/tutorial/02.crearVista.png)
+
+- Seleccionar *por origen* la fuente *AppVideoSrc*:
+
+![Seleccionar por origen la fuente AppVideoSrc](img/tutorial/03.selectSouce.png)
+
+- Queda seleccionada la fuente/origen y el log *AppVideoLog**
+
+![log y origen seleccionados](img/tutorial/04.selectedSource.png)
+
+- No son necesarios más criterios de selección para un tutorial. Aceptar.
+
+- Dar un nombre y descripción, y si se prefiere situar la vista en el árbol delEvent Viewer. Aceptar.
+
+![Dar un nombre y descripción](img/tutorial/05.nameIt.png)
+
+- Ya se pueden observar los eventos generados:
+
+![Eventos generados](img/tutorial/06.events.png)
+- El evento más reciente aparece el primero de la lista.
+- Se ha categorizado en la categoría (3) (no hay *category name file*) por tener la marca TRIVIUM.
+- Se ha tomado como mensaje para la pestaña **General** el texto que sigue a la marca.
+- La fecha de generación del evento es la de su inserción en el registro por Powershell, no la del fichero de log.
+```
+Log:   01/19/2023 10:59:29 - 15 - TRIVIUM: Duis mattis dolor a dolor feugiat semper.
+Event: 2001 [Warning] Duis mattis dolor a dolor feugiat semper.
+```
 
