@@ -218,3 +218,52 @@ $paramLog = "AppVideoLog"
 Remove-EventLog -Source  $paramSource
 Remove-EventLog -LogName $paramLog
 ```
+
+## Creación de custom views en el Event Viewer
+
+Las _custom views_ del _event viewer_ se pueden crear guardando un XML
+en un directorio especial de Windows, o en uno de sus subdirectorios.
+
+Powershell es necesario solo para escibir con un `-Force` debido a los 
+permisos especiales de ese directorio (probado en una sesión de PS que ya de por si tenía permisos elevados de Administrador).
+
+La carpeta especial es `%ProgramData%\Microsoft\Event Viewer\Views`.
+```
+$templateStoragePath = Join-Path $env:ProgramData 'Microsoft\Event Viewer\Views'
+```
+Ejemplo de como definir una vista a la fuente `AppVideoSrc` en el log `AppVideoLog`.
+```
+$xmlTemplate = @"
+<ViewerConfig>
+  <QueryConfig>
+    <QueryParams>
+         <Simple>
+            <Channel>AppVideoLog</Channel>
+            <RelativeTimeInfo>0</RelativeTimeInfo>
+            <Source>AppVideoSrc</Source>
+            <BySource>True</BySource>
+         </Simple>
+    </QueryParams>
+    <QueryNode>
+         <Name LanguageNeutralValue="Hecho a mano">Hecho a mano</Name>
+         <Description>Generar eventos test</Description>
+         <QueryList>
+            <Query Id="0" Path="AppVideoLog">
+               <Select Path="AppVideoLog">*[System[Provider[@Name='AppVideoSrc']]]</Select>
+            </Query>
+         </QueryList>
+    </QueryNode>
+  </QueryConfig>
+</ViewerConfig>
+"@
+```
+La definición se guarda en el subdirectorio `Tutorial` dela carpeta especial, con el nombre `ejemplo.xml`.
+```
+$outputPath = Join-Path $templateStoragePath "Tutorial\ejemplo.xml"
+```
+Se aplica todo lo anterior por las bravas con `-Force`.
+```
+$xmlTemplate | Out-File -FilePath $outputPath -Force
+```
+
+
