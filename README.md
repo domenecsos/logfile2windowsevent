@@ -340,7 +340,9 @@ $xmlTemplate = @"
 "@
 # Creacion del directorio
 $fulldir = Join-Path $templateStoragePath $subdir
-mkdir -p "$fulldir"
+if ( -not (Test-Path "$fulldir") ) {
+	mkdir -p "$fulldir"
+}
 # Creacion del fichero
 $outputPath = Join-Path $templateStoragePath ($subdir+"\"+$fichero)
 $xmlTemplate | Out-File -FilePath $outputPath -Force
