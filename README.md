@@ -259,11 +259,47 @@ $xmlTemplate = @"
 ```
 La definición se guarda en el subdirectorio `Tutorial` dela carpeta especial, con el nombre `ejemplo.xml`.
 ```
-$outputPath = Join-Path $templateStoragePath "Tutorial\ejemplo.xml"
+$subdir="Tutorial"
+$fichero="ejemplo.xml"
+$outputPath = Join-Path $templateStoragePath ($subdir+"\"+$fichero)
 ```
 Se aplica todo lo anterior por las bravas con `-Force`.
 ```
 $xmlTemplate | Out-File -FilePath $outputPath -Force
+```
+Sumado todo
+```
+$templateStoragePath = Join-Path $env:ProgramData 'Microsoft\Event Viewer\Views'
+$xmlTemplate = @"
+<ViewerConfig>
+  <QueryConfig>
+    <QueryParams>
+         <Simple>
+            <Channel>AppVideoLog</Channel>
+            <RelativeTimeInfo>0</RelativeTimeInfo>
+            <Source>AppVideoSrc</Source>
+            <BySource>True</BySource>
+         </Simple>
+    </QueryParams>
+    <QueryNode>
+         <Name LanguageNeutralValue="Hecho a mano">Hecho a mano</Name>
+         <Description>Generar eventos test</Description>
+         <QueryList>
+            <Query Id="0" Path="AppVideoLog">
+               <Select Path="AppVideoLog">*[System[Provider[@Name='AppVideoSrc']]]</Select>
+            </Query>
+         </QueryList>
+    </QueryNode>
+  </QueryConfig>
+</ViewerConfig>
+"@
+$subdir = "OtroDirectorio"
+$fichero = "ejemplo.xml"
+$fulldir = Join-Path $templateStoragePath $subdir
+mkdir -p "$fulldir"
+$outputPath = Join-Path $templateStoragePath ($subdir+"\"+$fichero)
+$xmlTemplate | Out-File -FilePath $outputPath -Force
+
 ```
 
 
