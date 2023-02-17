@@ -267,10 +267,97 @@ Se aplica todo lo anterior por las bravas con `-Force`.
 ```
 $xmlTemplate | Out-File -FilePath $outputPath -Force
 ```
+
 # Version final del script
 
-Consultar el script `installFullEquip.ps1` 
+Consultar el script [installFullEquip.ps1](installFullEquip.ps1)
 
-- [installFullEquip.ps1](installFullEquip.ps1)
+- Las definiciones de `$paramLog` y `$paramSource` deben coincidir en `installFullEquip.ps1` y `listenLogGenEvents.ps1`.
+- El script no incluye la automatización de la creación de un servicio. Ver siguiente partado.
 
-Las definiciones de `$paramLog` y `$paramSource` deben coincidir en `installFullEquip.ps1` y `listenLogGenEvents.ps1`.
+
+# Creación de un servicio Windows
+
+El script de instalación no incluye la automatización de la creación de un servicio.
+Se recomienda probar lo descrito en este apartado en las máquinas destino y una vez afianzado incorporarlo al script. 
+
+Detalles en [https://woshub.com/run-powershell-script-as-windows-service/](https://woshub.com/run-powershell-script-as-windows-service/).
+
+## Instalar NSSM: The non-sucking service manager
+
+La página [https://nssm.cc/](https://nssm.cc/) advierte que NSSM es un solo ejecutable
+que basta con que esté en el path.
+
+Todo lo que sigue se puede usar en un PC de desarrollo para obtenerlo, o simplemente descargarlo de la web y copiar `nssm.exe`en algún  lugar del path.
+
+En un directorio temporal. Única instrucción, separada por \`.
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; `
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+```
+Luego
+```
+choco install nssm
+```
+Validar:
+```
+choco -v
+	1.3.0
+	
+nssm -v
+	NSSM 2.24-101-g897c7ad 64-bit 2017-04-26
+```
+## Instalar el servicio propiamente dicho
+Una vez NSSM esté en el path, instalar el servicio propiamente dicho.
+
+Configura el nombre de servicio
+```
+$NewServiceName = "AppVideoLogListener"
+```
+TODO: Verificar que estos dos `Get-Command` devuelven un String que apunta a los respectivos ejecutables.
+```
+$PoShPath= (Get-Command powershell).Source
+$NSSMPath = (Get-Command nssm.exe).Source
+```
+Apuntar al path absoluto del fichero del listener.
+
+El propio listener tambien debe tener el path absoluto del log en la configuración en $logFile.
+```
+$PoShScriptPath = "C:\_exe\Justicia\Fuentes\logfile2windowsevent\listenLogGenEvents.ps1"
+```
+Estos tres comandos se ejecutan juntos en una sola linea.
+```
+$args = '-ExecutionPolicy Bypass -NoProfile -File "{0}"' -f $PoShScriptPath
+& $NSSMPath install $NewServiceName $PoShPath $args
+& $NSSMPath status $NewServiceName
+	Service "AppVideoLogListener" installed successfully!
+	SERVICE_STOPPED
+```
+Despues de lo anterior, el servicio aparece creado en la consola de servicios, con arranque automático.
+
+Antes de arrancar el servicio, asegurarse de que se ha ejecutado `installFullEquip.ps1` y existe la correspondiente vista personalizada en Visor de eventos.
+
+Para arrancar un servicio:
+```
+Start-Service $NewServiceName
+```
+Para obtener información del servicio
+```
+Get-Service -DisplayName "$NewServiceName"
+```
+Para eliminar un servicio si estamos en PS versión 6 o mayor.
+```
+Get-Service -DisplayName "$NewServiceName" | Remove-Service
+```
+En versiones anteriores de PS habrá que usar otros métodos,
+ver [https://www.itprotoday.com/compute-engines/how-do-i-delete-service](https://www.itprotoday.com/compute-engines/how-do-i-delete-service)
+```
+Get-Host | Select-Object Version
+	Version
+	-------
+	5.1.19041.2364
+```
+Pruebas efectuadas:
+- Arrancado el generador de log de pruebas en los scripts.
+- Arrancado el servicio y a ratos pararlo y volver a arrancar.
+- Visto como el Visor de eventos captura los eventos, y solo mientras el servicio está arrancado.
