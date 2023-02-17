@@ -1,6 +1,8 @@
 # -------------------------------------------------------------------------------------------------------------------
 # Configurar
 
+# Nota: New-EventLog : Sólo los primeros ocho caracteres de un nombre de registro personalizado son significativos.
+
 # Event log de Windows a escribir. Si no existe, el script la creará.
 $paramLog = "AppVideoLog"
 
