@@ -3,6 +3,8 @@
 
 # Nota: New-EventLog : Sólo los primeros ocho caracteres de un nombre de registro personalizado son significativos.
 
+# Nota: Las definiciones de `$paramLog` y `$paramSource` deben coincidir en `installFullEquip.ps1` y `listenLogGenEvents.ps1`.
+
 # Event log de Windows a escribir. Si no existe, el script la creará.
 $paramLog = "AppVideoLog"
 

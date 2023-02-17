@@ -3,6 +3,8 @@
 # -------------------------------------------------------------------------------------------------------------------
 # Configurar
 
+# Nota: Las definiciones de `$paramLog` y `$paramSource` deben coincidir en `installFullEquip.ps1` y `listenLogGenEvents.ps1`.
+
 # Situación del fichero de log monitorizado
 $logFile = "log\generated.log" 
 

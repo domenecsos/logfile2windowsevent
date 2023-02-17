@@ -272,3 +272,5 @@ $xmlTemplate | Out-File -FilePath $outputPath -Force
 Consultar el script `installFullEquip.ps1` 
 
 - [installFullEquip.ps1](installFullEquip.ps1)
+
+Las definiciones de `$paramLog` y `$paramSource` deben coincidir en `installFullEquip.ps1` y `listenLogGenEvents.ps1`.
