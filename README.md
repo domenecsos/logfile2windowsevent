@@ -50,6 +50,11 @@ Visor de eventos de windows (ejecutar *eventvwr.msc*)
 
 ![Arrancar Powershell como administrador](img/tutorial/01.powershellAdmin.png)
 
+Ejecutar el comando para entrar en la consola de powershell:
+```
+powershell
+```
+
 - En la consola de Powershell, ir al directorio que contiene los scripts.
 
 ```
@@ -58,7 +63,7 @@ PS C:\> cd C:\...\logfile2windowsevent
 
 - Arrancar el generador de log ejemplo (*log/generated.log*):
 ```
-PS C:\...\logfile2windowsevent> start powershell .\generaLog.ps1
+PS C:\...\logfile2windowsevent>powershell -ExecutionPolicy Bypass -NoProfile -File .\generaLog.ps1
 ```
 Este generador de log añade una linea cada dos segundos, 
 y cada tres o cada cuatro lineas el contenido de esa linea 
@@ -83,7 +88,9 @@ según la periodicidad de la línea.
 ```
 - Arrancar el scipt de escucha de log y generación de eventos. Interrumpirlo (*Ctr-C*) cuando haya registrado unos cuatro eventos.
 ```
-PS C:\...\logfile2windowsevent> .\listenLogGenEvents.ps1
+PS C:\...\logfile2windowsevent> powershell -ExecutionPolicy Bypass -NoProfile -File .\listenLogGenEvents.ps1
+```
+```
 Textos a buscar en los logs, y el id de evento que se asociarÃ¡ a cada uno de ellos
 TRIVIUM: -> 2001 [Warning]
 QUADRIVIUM: -> 2002 [Error]
