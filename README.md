@@ -42,6 +42,11 @@ Visor de eventos de windows (ejecutar *eventvwr.msc*)
 
 # Tutorial
 
+## Inicio rapido
+
+Ejecutar QuickStart.bat
+Se abriran las 2 consolas necesarias
+
 ## Generar eventos del tutorial
 
 - Descargar a local el código de este sitio github, con clone o en un zip.
