@@ -11,11 +11,11 @@ try
 {
     # Set new environment for Action Extensions Methods
     Add-Type -Path $env:ATERNITY_AGENT_HOME\ActionExtensionsMethods.dll
- 
+
     # Add any PowerShell business logic and check whether to raise a health event
     # TODO: Replace this with any customized PowerShell behavior
     [bool]$raiseHealthEvent = $false
- 
+
     # Check whether a custom health event should be created by the Agent
     if ($raiseHealthEvent -eq $true)
     {
@@ -64,6 +64,7 @@ catch
     [ActionExtensionsMethods.PowershellPluginMethods]::SetFailed($_.Exception.Message)
 }
 ```
+
 ### Requisitos
 
 Al cliente le interesa obtener dos cosas:
@@ -75,7 +76,7 @@ Al cliente le interesa obtener dos cosas:
 
 ## Generar un evento cuando el consumo de CPU del sistema llegue a un porcentaje
 
-Este sencillo snippet de código permite ver el consumo de CPU. 
+Este sencillo snippet de código permite ver el consumo de CPU.
 Se han comparado los datos obtenidos con la carga que genera **cpustres**, disponible junto al código.
 
 ```
@@ -113,9 +114,10 @@ Para la máquina local no es necesario usar el argumento **-ComputerName**.
 PS C:...>  (Get-WmiObject -Class win32_processor -ErrorAction Stop | Measure-Object -Property LoadPercentage -Average | Select-Object Average).Average
 100
 ```
+
 ### Propuesta para generar un evento cuando el consumo de CPU del sistema llegue a un porcentaje
 
-Este código puede insertarse en un bucle infinito con un sleep (segundos) marcando el ritmo. 
+Este código puede insertarse en un bucle infinito con un sleep (segundos) marcando el ritmo.
 El conjunto se puede empaquetar como un servicio como se indica para la lectura de logs.
 
 ```
@@ -151,25 +153,23 @@ catch
 }
 ```
 
-
-
-
 ## Generar un evento cuando un proceso de Windows consuma un determinado porcentaje.
 
-Obtener el valor de CPU de un proceso "de task manager" desde Powershell no parece la más clara de las tareas. 
-El cálculo siguiente es una buena aproximación para un nombre de proceso conocido 
+Obtener el valor de CPU de un proceso "de task manager" desde Powershell no parece la más clara de las tareas.
+El cálculo siguiente es una buena aproximación para un nombre de proceso conocido
 y que tenga una única aparición en la lista de `Get-Process`.
 
-Se ha validado que con 1, 2, 3 y 4 hilos a toda máquina midiese 25%, 50%, 75% y 100% de CPU 
+Se ha validado que con 1, 2, 3 y 4 hilos a toda máquina midiese 25%, 50%, 75% y 100% de CPU
 si bien Task Manager daba valores algo mayores a los primeros y 99% al último.
 
 Integrar la medida en la plantilla usando `$prod_percentage_cpu` en el comparador de umbral no tiene más complicación.
+
 ```
 $cpu_cores = (Get-WMIObject Win32_ComputerSystem).NumberOfLogicalProcessors
 $prod_percentage_cpu = [Math]::Round(((Get-Counter ("\proceso(CPUSTRES64)\% de tiempo de procesador")).CounterSamples.CookedValue) / $cpu_cores)
 ```
 
-Para probar ejemplos hay que tener en cuenta que el código disponible en Internet 
+Para probar ejemplos hay que tener en cuenta que el código disponible en Internet
 usa mayoritariamente nombres de contadores de sistema en inglés, mientras que las máquinas locales que usemos pueden tenerlos en castellano.
 Estas son las equivalencias encontradas.
 
@@ -177,8 +177,9 @@ Estas son las equivalencias encontradas.
 - `\Process(xxx)\% Processor Time` -> `\proceso(xxx)\% de tiempo de procesador`
 
 Un caso avanzado puede ser cuando varios procesos tengan un mismo nombre y puede que nos interese arrancar dando un pid.
-Un ejemplo clásico, un servidor Weblogic con varios procesos *java*.
-Este ejemplo se puede usar dando `$proc_pid` como argumento. En su defecto, `$proc_pid` está tomando el PID del primer proceso *java* de la lista de procesos.
+Un ejemplo clásico, un servidor Weblogic con varios procesos _java_.
+Este ejemplo se puede usar dando `$proc_pid` como argumento. En su defecto, `$proc_pid` está tomando el PID del primer proceso _java_ de la lista de procesos.
+
 ```
 # To get the PID of the process (this will give you the first occurrance if multiple matches)
 $proc_pid = (get-process "java").Id[0]
@@ -196,6 +197,3 @@ $prod_percentage_cpu = [Math]::Round(((Get-Counter ($proc_path -replace "\\id pr
 $proc_path = ((Get-Counter "\proceso(*)\id. de proceso").CounterSamples| ? {$_.CookedValue -eq $proc_pid}).Path
 $prod_percentage_cpu = [Math]::Round(((Get-Counter ($proc_path -replace "\\id. de proceso$","\% de tiempo de procesador")).CounterSamples.CookedValue) / $cpu_cores)
 ```
-
-
-
