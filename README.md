@@ -332,6 +332,12 @@ Detalles en [https://woshub.com/run-powershell-script-as-windows-service/](https
 
 ## Instalar NSSM: The non-sucking service manager
 
+### Instalación rápida de NSSM
+
+Ejecutar el archivo como administrador: InstallChocoAndNssm-Run_as_Admin.bat
+
+### Instalación paso a paso
+
 La página [https://nssm.cc/](https://nssm.cc/) advierte que NSSM es un solo ejecutable
 que basta con que esté en el path.
 
